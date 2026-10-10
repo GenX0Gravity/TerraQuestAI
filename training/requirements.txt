@@ -1,0 +1,12 @@
+# Python requirements for TerraQuest AI Species Classifier Training
+# Supports Kaggle and Open-Source Datasets (Oxford Flowers, Birds 525, PlantVillage, iNaturalist)
+
+torch>=2.0.0
+torchvision>=0.15.0
+timm>=0.9.0
+onnx>=1.14.0
+kaggle>=1.5.16
+pillow>=9.5.0
+tqdm>=4.65.0
+scikit-learn>=1.2.0
+numpy>=1.24.0

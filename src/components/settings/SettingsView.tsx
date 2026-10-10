@@ -23,6 +23,9 @@ import {
   Info,
   Terminal,
   Server,
+  BookOpen,
+  Eye,
+  Layers,
 } from "lucide-react";
 import { getAIProvider, resetProviderCache } from "@/lib/ai/provider";
 import { AIProviderStatus } from "@/lib/ai/types";
@@ -247,8 +250,9 @@ export function SettingsView() {
                       <option value="qwen2.5:1.5b">Qwen 2.5 (1.5B) — Ultra Lightweight</option>
                       <option value="gemma2:2b">Gemma 2 (2B) — Efficient & Creative</option>
                       <option value="llama3.2:3b">Llama 3.2 (3B) — Highly Capable</option>
-                      <option value="llava:7b">LLaVA (7B) — Vision & Multimodal</option>
-                      <option value="moondream">Moondream — Tiny Vision Model</option>
+                      <option value="moondream">Moondream (1.8B) — Recommended Tiny Vision Model</option>
+                      <option value="llava:7b">LLaVA (7B) — Multimodal Vision</option>
+                      <option value="llama3.2-vision">Llama 3.2 Vision (11B) — Advanced Multimodal</option>
                     </select>
                   </div>
                 </div>
@@ -287,24 +291,65 @@ export function SettingsView() {
                     <div>{testStatus.message}</div>
                     {testStatus.latencyMs && (
                       <div className="text-[11px] opacity-80 mt-1">
-                        Latency: {testStatus.latencyMs}ms • Active Model: {testStatus.activeModel}
+                        Latency: {testStatus.latencyMs}ms • Active Model: {testStatus.activeModel} • Vision Capable: {testStatus.isVisionCapable ? "Yes (Vision Model Active)" : "Text only (Will use local taxonomy fallback for images)"}
                       </div>
                     )}
                   </Alert>
                 )}
 
-                {/* Setup Instructions Card */}
-                <div className="p-4 rounded-2xl bg-nature-50 dark:bg-nature-900/40 border border-nature-200 dark:border-nature-800 space-y-2 text-xs text-nature-800 dark:text-nature-200">
-                  <div className="font-semibold flex items-center gap-2 text-forest dark:text-nature-100">
-                    <Terminal className="w-4 h-4 text-emerald-600" />
-                    <span>How to Run Ollama Locally (Zero API Fees, 100% Private)</span>
+                {/* Open-Source Vision & Kaggle Training Suite Banner */}
+                <div className="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40 space-y-3 text-xs text-nature-800 dark:text-nature-200">
+                  <div className="flex items-center justify-between">
+                    <div className="font-semibold flex items-center gap-2 text-forest dark:text-nature-100">
+                      <Eye className="w-4 h-4 text-emerald-600" />
+                      <span>Species Vision Intelligence: Instant Model or Kaggle Training</span>
+                    </div>
+                    <Badge variant="forest" className="text-[10px]">
+                      Open-Source AI
+                    </Badge>
                   </div>
-                  <ol className="list-decimal list-inside space-y-1 text-nature-600 dark:text-nature-400 font-mono text-[11px]">
-                    <li>Install Ollama from <code className="bg-nature-200 dark:bg-nature-800 px-1 py-0.5 rounded text-nature-900 dark:text-nature-100">ollama.com</code></li>
-                    <li>Open terminal and run: <code className="bg-nature-200 dark:bg-nature-800 px-1 py-0.5 rounded text-nature-900 dark:text-nature-100">ollama run qwen2.5:3b</code></li>
-                    <li>Optional vision: <code className="bg-nature-200 dark:bg-nature-800 px-1 py-0.5 rounded text-nature-900 dark:text-nature-100">ollama pull moondream</code></li>
-                    <li>If offline or Ollama is stopped, TerraQuest seamlessly switches to field guide heuristics!</li>
-                  </ol>
+
+                  <p className="text-nature-600 dark:text-nature-400 leading-relaxed text-[11px]">
+                    To classify species with high accuracy and confidence upon upload, you have two open-source options:
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                    {/* Option 1: Instant Vision Model */}
+                    <div className="p-3 rounded-xl bg-white dark:bg-nature-900 border border-nature-200 dark:border-nature-800 space-y-1.5">
+                      <div className="font-semibold text-forest dark:text-emerald-300 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>1. Instant Vision Model (Ollama)</span>
+                      </div>
+                      <p className="text-[11px] text-nature-600 dark:text-nature-400">
+                        Zero training needed. Pull lightweight open weights with zero cloud telemetry:
+                      </p>
+                      <div className="bg-nature-100 dark:bg-nature-950 p-2 rounded-lg font-mono text-[10px] text-nature-800 dark:text-nature-200">
+                        ollama pull moondream<br />
+                        <span className="text-nature-500"># Or for 7B/11B GPUs:</span><br />
+                        ollama pull llava
+                      </div>
+                    </div>
+
+                    {/* Option 2: Train on Kaggle Datasets */}
+                    <div className="p-3 rounded-xl bg-white dark:bg-nature-900 border border-nature-200 dark:border-nature-800 space-y-1.5">
+                      <div className="font-semibold text-forest dark:text-emerald-300 flex items-center gap-1.5">
+                        <Layers className="w-3.5 h-3.5" />
+                        <span>2. Train with Kaggle Datasets</span>
+                      </div>
+                      <p className="text-[11px] text-nature-600 dark:text-nature-400">
+                        Use the bundled pipeline to fine-tune MobileNetV3 / EfficientNet on Oxford Flowers or Birds 525:
+                      </p>
+                      <div className="bg-nature-100 dark:bg-nature-950 p-2 rounded-lg font-mono text-[10px] text-nature-800 dark:text-nature-200">
+                        python training/download_dataset.py --dataset flowers102<br />
+                        python training/train_classifier.py --dataset flowers102
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="text-[11px] text-nature-500 pt-1 flex items-center gap-1">
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>See <code className="bg-nature-200/60 dark:bg-nature-800 px-1 py-0.5 rounded font-mono">README.md</code> (Section 7: Machine Learning & Kaggle Suite) for step-by-step dataset preparation, ONNX export, and evaluation metrics.</span>
+                  </div>
                 </div>
               </div>
             )}

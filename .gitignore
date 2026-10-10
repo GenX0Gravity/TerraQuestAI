@@ -22,3 +22,12 @@ yarn-error.log*
 # OS files
 .DS_Store
 Thumbs.db
+
+# Machine Learning & Training Artifacts
+data/
+models/
+*.pt
+*.onnx
+*.tflite
+.kaggle/
+*.tsbuildinfo

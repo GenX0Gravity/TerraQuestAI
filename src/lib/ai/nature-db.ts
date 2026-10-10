@@ -137,6 +137,44 @@ export const NATURE_DATABASE: SpeciesRecord[] = [
     safetyNotes: "Top raptor. Observe from distance with binoculars; do not disturb nesting trees.",
     conservationStatus: "Least Concern"
   },
+  {
+    id: "bird-european-robin",
+    commonName: "European Robin",
+    scientificName: "Erithacus rubecula",
+    category: "bird",
+    family: "Muscicapidae (Old World Flycatchers)",
+    habitat: "Woodlands, hedgerows, parks, cottage gardens",
+    distinguishingFeatures: [
+      "Bright orange-red breast and face bordered by soft bluish-gray",
+      "Olive-brown upperparts and pale whitish belly",
+      "Large, inquisitive dark brown eyes",
+      "Upright stance and confident territorial garden hopping"
+    ],
+    callDescription: "Sweet, rippling melancholic warble; sharp 'tic-tic-tic' alarm call",
+    nativeRegions: ["Europe, Western Asia, North Africa"],
+    seasonalAvailability: ["Year-round"],
+    safetyNotes: "Famous gardener's companion, following turning soil to find worms and grubs.",
+    conservationStatus: "Least Concern"
+  },
+  {
+    id: "bird-american-goldfinch",
+    commonName: "American Goldfinch",
+    scientificName: "Spinus tristis",
+    category: "bird",
+    family: "Fringillidae (Finches)",
+    habitat: "Weedy fields, floodplains, roadsides, sunflower gardens",
+    distinguishingFeatures: [
+      "Breeding males are brilliant bright canary-yellow with black forehead cap",
+      "Jet black wings with bold white wing bars",
+      "Conical pinkish bill adapted for plucking small thistle and coneflower seeds",
+      "Bouncing, undulating roller-coaster flight pattern"
+    ],
+    callDescription: "Cheerful musical 'po-ta-to-chip' flight calls and canary-like trills",
+    nativeRegions: ["North America"],
+    seasonalAvailability: ["Year-round (males molt to olive-brown in winter)"],
+    safetyNotes: "Strict vegetarian finch; plant native coneflowers and sunflowers to feed flocks naturally.",
+    conservationStatus: "Least Concern"
+  },
 
   // --- PLANTS & WILDFLOWERS ---
   {
@@ -250,6 +288,79 @@ export const NATURE_DATABASE: SpeciesRecord[] = [
     conservationStatus: "Least Concern"
   },
   {
+    id: "plant-garden-rose",
+    commonName: "Common Rose / Garden Rose",
+    scientificName: "Rosa gallica / Rosa spp.",
+    category: "plant",
+    family: "Rosaceae (Rose Family)",
+    habitat: "Gardens, parks, domestic borders, hedgerows, yards",
+    distinguishingFeatures: [
+      "Showy multi-petaled red, crimson, pink, or white fragrant flower blossoms with swirling petals",
+      "Woody shrub stems armed with sharp prickles (thorns)",
+      "Pinnate compound leaves with 3 to 7 oval, finely serrated dark green leaflets",
+      "Produces spherical scarlet-red seed pods (rose hips) in late summer and autumn",
+      "Popular ornamental garden flower and hedge shrub with sweet fragrance"
+    ],
+    nativeRegions: ["Eurasia", "North America", "Cultivated Worldwide"],
+    seasonalAvailability: ["Late Spring", "Summer", "Autumn"],
+    safetyNotes: "Protective prickles (thorns) along the canes. Handle stems with care or use gardening gloves.",
+    conservationStatus: "Least Concern",
+    imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80"
+  },
+  {
+    id: "plant-wild-rose",
+    commonName: "Wild Rose / Beach Rose",
+    scientificName: "Rosa rugosa",
+    category: "plant",
+    family: "Rosaceae (Rose Family)",
+    habitat: "Coastal dunes, trail borders, hedgerows, sunny scrub",
+    distinguishingFeatures: [
+      "Open 5-petaled magenta-pink or white blossoms with bright yellow central anthers",
+      "Deeply veined, crinkled (rugose) dark green pinnate leaves",
+      "Dense straight bristles and sharp thorns covering the canes",
+      "Large, round tomato-shaped red rose hips"
+    ],
+    nativeRegions: ["Eastern Asia / Widely naturalized in temperate zones"],
+    seasonalAvailability: ["Summer", "Early Autumn"],
+    safetyNotes: "Dense thorny canes protect nesting birds; avoid reaching into thickets without gloves.",
+    conservationStatus: "Least Concern"
+  },
+  {
+    id: "plant-common-sunflower",
+    commonName: "Common Sunflower",
+    scientificName: "Helianthus annuus",
+    category: "plant",
+    family: "Asteraceae (Daisy Family)",
+    habitat: "Gardens, sunny meadows, agricultural borders",
+    distinguishingFeatures: [
+      "Radiant golden-yellow ray petals surrounding a large dark brown center disk",
+      "Tall, thick, rough-hairy fibrous stem",
+      "Broad heart-shaped coarsely toothed leaves",
+      "Immature flower heads follow the sun from east to west (heliotropism)"
+    ],
+    nativeRegions: ["North America / Worldwide cultivation"],
+    seasonalAvailability: ["Mid-Summer", "Autumn"],
+    safetyNotes: "Outstanding wildlife food; bees gather abundant nectar and goldfinches harvest the autumn seeds.",
+    conservationStatus: "Least Concern"
+  },
+  {
+    id: "plant-tulip",
+    commonName: "Garden Tulip",
+    scientificName: "Tulipa gesneriana",
+    category: "plant",
+    family: "Liliaceae (Lily Family)",
+    habitat: "Spring flower beds, window planters, botanical gardens",
+    distinguishingFeatures: [
+      "Cup-shaped symmetrical bloom with 6 vibrant red, pink, or yellow tepals",
+      "Smooth, fleshy, glaucous grayish-green strap-like leaves",
+      "Erect leafless flowering stem rising from an underground bulb"
+    ],
+    nativeRegions: ["Central Asia, Anatolia / Naturalized globally"],
+    seasonalAvailability: ["Spring"],
+    safetyNotes: "Bulbs contain tulipalin and are toxic to dogs and cats; do not ingest.",
+    conservationStatus: "Least Concern"
+  },
+  {
     id: "plant-purple-coneflower",
     commonName: "Purple Coneflower",
     scientificName: "Echinacea purpurea",
@@ -265,6 +376,43 @@ export const NATURE_DATABASE: SpeciesRecord[] = [
     nativeRegions: ["North America"],
     seasonalAvailability: ["Summer", "Autumn"],
     safetyNotes: "Superb native garden pollinator plant. Goldfinches flock to the dried seed cones in autumn and winter.",
+    conservationStatus: "Least Concern"
+  },
+  {
+    id: "plant-english-lavender",
+    commonName: "English Lavender",
+    scientificName: "Lavandula angustifolia",
+    category: "plant",
+    family: "Lamiaceae (Mint Family)",
+    habitat: "Sunny garden borders, dry stony slopes, pollinator beds",
+    distinguishingFeatures: [
+      "Slender upright spikes of highly aromatic violet-purple to blue tubular flowers",
+      "Narrow, linear gray-green to silvery leaves",
+      "Compact semi-woody evergreen subshrub",
+      "Intense, calming floral herbal perfume rich in essential oils"
+    ],
+    nativeRegions: ["Mediterranean"],
+    seasonalAvailability: ["Summer"],
+    edibleWarning: "Culinary herb used in teas and baking. Do not consume ornamental cultivars treated with pesticides.",
+    safetyNotes: "Irresistible to bumblebees and honeybees. Plant in full sun with gritty, free-draining soil.",
+    conservationStatus: "Least Concern"
+  },
+  {
+    id: "plant-common-daisy",
+    commonName: "Common Daisy / Lawn Daisy",
+    scientificName: "Bellis perennis",
+    category: "plant",
+    family: "Asteraceae (Daisy Family)",
+    habitat: "Lawns, meadows, park greens, roadsides",
+    distinguishingFeatures: [
+      "Classic composite flower with pure white (or pink-tipped) ray petals and bright yellow central disc florets",
+      "Basal rosette of spoon-shaped, softly hairy leaves",
+      "Single flower head per leafless stem (heliotropic, closing at dusk)",
+      "Low carpet growth habit surviving lawn mower blades"
+    ],
+    nativeRegions: ["Europe / Naturalized widely in temperate climates"],
+    seasonalAvailability: ["Early Spring", "Summer", "Autumn"],
+    safetyNotes: "Hearty native wildflower. Closing petals at night gave it the Anglo-Saxon name 'day's eye'.",
     conservationStatus: "Least Concern"
   },
 

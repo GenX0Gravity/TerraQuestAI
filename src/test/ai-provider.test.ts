@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { LocalFallbackProvider } from "@/lib/ai/fallback";
+import { extractImageFeatures } from "@/lib/image-analysis";
 
 describe("LocalFallbackProvider (Offline Nature Intelligence)", () => {
   const provider = new LocalFallbackProvider();
@@ -43,6 +44,55 @@ describe("LocalFallbackProvider (Offline Nature Intelligence)", () => {
     expect(result.confidence).toBeGreaterThan(60);
     expect(result.isCertain).toBe(false); // Honesty: never claim certain
     expect(result.distinguishingFeatures.length).toBeGreaterThan(0);
+  });
+
+  it("should accurately identify a rose photo and categorize as plant, never bird", async () => {
+    const result = await provider.identify({
+      imageFileName: "my_garden_rose.jpg",
+      imageBase64: "data:image/jpeg;base64,sample",
+      userObservations: {
+        category: "all",
+      },
+    });
+
+    expect(result.category).toBe("plant");
+    expect(result.category).not.toBe("bird");
+    expect(result.speciesName.toLowerCase()).toContain("rose");
+    expect(result.scientificName).toContain("Rosa");
+  });
+
+  it("should identify a rose when red and green colors and flower petals are observed", async () => {
+    const result = await provider.identify({
+      userObservations: {
+        category: "plant",
+        colors: ["red", "green"],
+        additionalNotes: "Fragrant multi-petaled red flower on a thorny woody shrub in garden",
+      },
+    });
+
+    expect(result.category).toBe("plant");
+    expect(result.speciesName).toBe("Common Rose / Garden Rose");
+    expect(result.scientificName).toBe("Rosa gallica / Rosa spp.");
+    expect(result.confidence).toBeGreaterThan(65);
+  });
+
+  it("should extract botanical hints and suggest plant category from filename clues", async () => {
+    const features = await extractImageFeatures("data:image/jpeg;base64,sample", "red_rose.jpg");
+    expect(features.suggestedCategory).toBe("plant");
+    expect(features.dominantColors).toContain("red");
+    expect(features.confidenceHints.length).toBeGreaterThan(0);
+  });
+
+  it("should categorize red, pink, and green hues as plant rather than bird even without explicit notes", async () => {
+    const result = await provider.identify({
+      userObservations: {
+        category: "all",
+        colors: ["red", "pink", "green"],
+      },
+    });
+
+    expect(result.category).toBe("plant");
+    expect(result.category).not.toBe("bird");
   });
 
   it("should generate a realistic adventure mission plan with checkpoints", async () => {

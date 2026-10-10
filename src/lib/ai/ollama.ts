@@ -161,15 +161,48 @@ export class OllamaProvider implements AIProvider {
           ? params.imageBase64.split(",")[1]
           : params.imageBase64;
 
-        const visionModels = ["llava", "moondream", "minicpm-v"];
+        const visionKeywords = ["moondream", "llava", "vision", "minicpm-v", "qwen2-vl", "bakllava"];
         const available = await this.listModels();
-        const visionModel = available.find((m) =>
-          visionModels.some((vm) => m.toLowerCase().includes(vm))
-        );
+
+        // Check if selected model is vision capable, or find any installed vision model
+        let visionModel: string | undefined = undefined;
+        if (visionKeywords.some((vk) => this.defaultModel.toLowerCase().includes(vk))) {
+          visionModel = this.defaultModel;
+        } else {
+          visionModel = available.find((m) =>
+            visionKeywords.some((vk) => m.toLowerCase().includes(vk))
+          );
+        }
 
         if (visionModel) {
+          // Construct rich context hints to guide high-confidence classification
+          let contextHints = "";
+          if (params.userObservations?.category && params.userObservations.category !== "all") {
+            contextHints += ` The observer notes this specimen is likely a ${params.userObservations.category}.`;
+          }
+          if (params.userObservations?.colors && params.userObservations.colors.length > 0) {
+            contextHints += ` Dominant colors observed in specimen: ${params.userObservations.colors.join(", ")}.`;
+          }
+          if (params.imageFileName && !params.imageFileName.startsWith("captured_specimen")) {
+            contextHints += ` Specimen file name: ${params.imageFileName}.`;
+          }
+          if (params.userObservations?.additionalNotes) {
+            contextHints += ` Observer field notes: "${params.userObservations.additionalNotes}".`;
+          }
+
           const prompt =
-            "Analyze this nature photo of a plant, bird, insect, or tree. Provide your response as JSON with keys: speciesName, scientificName, category, confidence (0-100), distinguishingFeatures (array), habitat, safetyNotes, edibleWarning.";
+            `You are an expert botanist, ornithologist, and field naturalist. Analyze this nature specimen image carefully.${contextHints}\n\n` +
+            `Identify the species with high biological precision. Provide your answer strictly as a valid JSON object with the following schema:\n` +
+            `{\n` +
+            `  "speciesName": "Common name (e.g. Common Rose / Garden Rose, American Robin, Monarch Butterfly)",\n` +
+            `  "scientificName": "Binomial nomenclature (e.g. Rosa gallica, Turdus migratorius)",\n` +
+            `  "category": "plant" | "bird" | "tree" | "insect" | "fungi" | "mammal",\n` +
+            `  "confidence": integer between 1 and 100,\n` +
+            `  "distinguishingFeatures": ["key visual trait 1", "key visual trait 2", "key visual trait 3"],\n` +
+            `  "habitat": "typical habitat description",\n` +
+            `  "safetyNotes": "safety precautions or touching/handling advisory",\n` +
+            `  "edibleWarning": "edible or toxic note (clearly warn if toxic or inedible)"\n` +
+            `}`;
 
           const url = typeof window !== "undefined" && this.useProxy
             ? "/api/ai/chat"
@@ -185,7 +218,7 @@ export class OllamaProvider implements AIProvider {
               images: [cleanBase64],
               stream: false,
             }),
-            signal: AbortSignal.timeout(40000),
+            signal: AbortSignal.timeout(45000),
           });
 
           if (res.ok) {
@@ -198,8 +231,8 @@ export class OllamaProvider implements AIProvider {
               return {
                 speciesName: parsed.speciesName || "Candidate Species",
                 scientificName: parsed.scientificName || "Taxon unknown",
-                category: parsed.category || "plant",
-                confidence: Number(parsed.confidence) || 75,
+                category: parsed.category || (params.userObservations?.category !== "all" ? params.userObservations?.category as any : "plant"),
+                confidence: Number(parsed.confidence) || 82,
                 isCertain: false,
                 distinguishingFeatures: Array.isArray(parsed.distinguishingFeatures)
                   ? parsed.distinguishingFeatures
@@ -208,8 +241,8 @@ export class OllamaProvider implements AIProvider {
                 safetyNotes: parsed.safetyNotes || "Observe without disturbing natural habitat.",
                 edibleWarning: parsed.edibleWarning || "Do not consume unknown wild specimens.",
                 fieldObservationTips: [
-                  "Examine specimen in daylight.",
-                  "Inspect leaf attachment and underside veins.",
+                  `Analyzed with local open-source vision model (${visionModel}).`,
+                  "Examine specimen in daylight and check leaf attachment or feather plumage.",
                 ],
                 candidateAlternatives: [],
                 modelUsed: visionModel,

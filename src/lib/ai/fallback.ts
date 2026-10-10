@@ -120,15 +120,33 @@ export class LocalFallbackProvider implements AIProvider {
   }
 
   async identify(params: IdentificationParams): Promise<IdentificationResult> {
-    const { userObservations = {} } = params;
-    const cat = (userObservations.category || "").toLowerCase();
+    const { userObservations = {}, imageFileName } = params;
+    let cat = (userObservations.category || "").toLowerCase();
     const queryColors = (userObservations.colors || []).map((c) => c.toLowerCase());
-    const notes = (userObservations.additionalNotes || "").toLowerCase();
+    const rawNotes = `${userObservations.additionalNotes || ""} ${imageFileName || ""}`.toLowerCase();
+    const normalizedNotes = rawNotes.replace(/[-_.]/g, " ");
     const shape = (userObservations.leafOrFeatherShape || "").toLowerCase();
 
-    // Score candidates from database
+    // Check if filename or notes strongly indicate botanical vs avian
+    const isFloralOrPlant =
+      /\brose\b|\brosa\b|\broses\b/i.test(normalizedNotes) ||
+      /\bflower\b|\bflowers\b|\bpetal\b|\bpetals\b|\bplant\b|\bleaf\b|\bleaves\b|\bblossom\b|\bshrub\b|\bgarden\b/i.test(normalizedNotes) ||
+      /\bthorn\b|\bthorns\b|\bthorny\b|\bprickle\b/i.test(normalizedNotes) ||
+      queryColors.includes("pink") ||
+      (queryColors.includes("red") && queryColors.includes("green"));
+
+    const isAvian =
+      /\bbird\b|\bbirds\b|\bfeather\b|\bfeathers\b|\bbeak\b|\bavian\b|\brobin\b|\bflight\b|\bwing\b/i.test(normalizedNotes);
+
+    if ((!cat || cat === "all") && isFloralOrPlant && !isAvian) {
+      cat = "plant";
+    } else if ((!cat || cat === "all") && isAvian && !isFloralOrPlant) {
+      cat = "bird";
+    }
+
+    // Filter candidates from database
     let candidates = NATURE_DATABASE.filter((sp) => {
-      if (cat && sp.category !== cat && cat !== "all") return false;
+      if (cat && cat !== "all" && sp.category !== cat) return false;
       return true;
     });
 
@@ -136,35 +154,117 @@ export class LocalFallbackProvider implements AIProvider {
       candidates = NATURE_DATABASE;
     }
 
+    // Specific species query regexes
+    const isRoseQuery = /\brose\b|\brosa\b|\broses\b/i.test(normalizedNotes);
+    const isRobinQuery = /\brobin\b/i.test(normalizedNotes);
+    const isOakQuery = /\boak\b/i.test(normalizedNotes);
+    const isSunflowerQuery = /\bsunflower\b/i.test(normalizedNotes);
+    const isDandelionQuery = /\bdandelion\b/i.test(normalizedNotes);
+    const isTulipQuery = /\btulip\b/i.test(normalizedNotes);
+    const isLavenderQuery = /\blavender\b/i.test(normalizedNotes);
+    const isDaisyQuery = /\bdaisy\b/i.test(normalizedNotes);
+    const isGoldfinchQuery = /\bgoldfinch\b/i.test(normalizedNotes);
+
+    const hasThornQuery = /\bthorns?\b|\bprickles?\b|\bthorny\b/i.test(normalizedNotes);
+    const hasFlowerQuery = /\bflowers?\b|\bpetals?\b|\bblooms?\b|\bblossoms?\b/i.test(normalizedNotes);
+    const hasFragranceQuery = /\bfragrant\b|\bfragrance\b|\bscented?\b/i.test(normalizedNotes);
+    const hasMultiPetalQuery = /\bmulti[- ]petaled\b|\bdouble[- ]flowered\b/i.test(normalizedNotes);
+
     // Score each candidate
     const scored = candidates.map((sp) => {
-      let score = 50;
-      const spText = `${sp.commonName} ${sp.scientificName} ${sp.distinguishingFeatures.join(" ")} ${sp.habitat}`.toLowerCase();
+      let score = 25;
+      const spText = `${sp.commonName} ${sp.scientificName} ${sp.family} ${sp.distinguishingFeatures.join(" ")} ${sp.habitat}`.toLowerCase();
+
+      // Category matching
+      if (cat && cat !== "all" && sp.category === cat) {
+        score += 20;
+      }
+
+      // Direct species keyword match (using exact name and id matching to avoid substring pitfalls like 'rosette' matching 'rose')
+      if (isRoseQuery) {
+        const isActualRose =
+          /\brose\b/i.test(sp.commonName) ||
+          /\brosa\b/i.test(sp.scientificName) ||
+          sp.id.includes("rose");
+        if (isActualRose) {
+          score += 65;
+        }
+      } else if (isRobinQuery && (sp.commonName.toLowerCase().includes("robin") || sp.id.includes("robin"))) {
+        score += 65;
+      } else if (isOakQuery && (sp.commonName.toLowerCase().includes("oak") || sp.id.includes("oak"))) {
+        score += 65;
+      } else if (isSunflowerQuery && (sp.commonName.toLowerCase().includes("sunflower") || sp.id.includes("sunflower"))) {
+        score += 65;
+      } else if (isDandelionQuery && (sp.commonName.toLowerCase().includes("dandelion") || sp.id.includes("dandelion"))) {
+        score += 65;
+      } else if (isTulipQuery && (sp.commonName.toLowerCase().includes("tulip") || sp.id.includes("tulip"))) {
+        score += 65;
+      } else if (isLavenderQuery && (sp.commonName.toLowerCase().includes("lavender") || sp.id.includes("lavender"))) {
+        score += 65;
+      } else if (isDaisyQuery && (sp.commonName.toLowerCase().includes("daisy") || sp.id.includes("daisy"))) {
+        score += 65;
+      } else if (isGoldfinchQuery && (sp.commonName.toLowerCase().includes("goldfinch") || sp.id.includes("goldfinch"))) {
+        score += 65;
+      }
 
       // Check colors
       queryColors.forEach((color) => {
-        if (spText.includes(color)) score += 15;
+        if (spText.includes(color)) score += 12;
+        // Prioritize flower color matching when user is looking at floral blooms
+        if (color === "red" && (spText.includes("red bloom") || spText.includes("red, crimson") || spText.includes("red petals") || spText.includes("scarlet-red"))) {
+          score += 15;
+        }
       });
 
-      // Check shapes
+      // Botanical features matching
       if (shape && spText.includes(shape)) score += 20;
 
-      // Check notes keywords
-      const words = notes.split(/\s+/).filter((w) => w.length > 3);
+      if (hasThornQuery && (spText.includes("thorn") || spText.includes("prickle"))) {
+        score += 20;
+      }
+
+      if (hasFlowerQuery && (spText.includes("flower") || spText.includes("petal") || spText.includes("blossom") || spText.includes("bloom"))) {
+        score += 15;
+      }
+
+      if (hasFragranceQuery && (spText.includes("fragrant") || spText.includes("scent"))) {
+        score += 15;
+      }
+
+      if (hasMultiPetalQuery && spText.includes("multi-petaled")) {
+        score += 25;
+      }
+
+      // Penalize cross-kingdom mismatch
+      if (isFloralOrPlant && sp.category === "bird") {
+        score -= 50;
+      }
+      if (isAvian && sp.category === "plant") {
+        score -= 50;
+      }
+
+      // General words overlap (ignoring common boilerplate)
+      const words = normalizedNotes.split(/\s+/).filter((w) => w.length > 3);
       words.forEach((w) => {
-        if (spText.includes(w)) score += 10;
+        if (
+          spText.includes(w) &&
+          !["photo", "specimen", "submitted", "workspace", "local", "image", "garden"].includes(w)
+        ) {
+          score += 6;
+        }
       });
 
-      return { sp, score: Math.min(score, 94) };
+      return { sp, rawScore: score, score: Math.min(Math.max(score, 15), 94) };
     });
 
-    scored.sort((a, b) => b.score - a.score);
-    const top = scored[0].sp;
+    scored.sort((a, b) => b.rawScore - a.rawScore);
+    const topScored = scored[0];
+    const top = topScored.sp;
     const second = scored[1]?.sp;
     const third = scored[2]?.sp;
 
     const alternatives = [second, third]
-      .filter((s): s is NonNullable<typeof s> => Boolean(s))
+      .filter((s): s is NonNullable<typeof s> => Boolean(s) && s.id !== top.id)
       .map((s) => ({
         speciesName: s.commonName,
         scientificName: s.scientificName,
@@ -183,8 +283,8 @@ export class LocalFallbackProvider implements AIProvider {
       edibleWarning: top.edibleWarning,
       fieldObservationTips: [
         "Observe species in natural lighting before disturbing.",
-        "Take a close-up photo of leaf attachment or beak profile for your journal.",
-        "Check surrounding vegetation and microclimate to confirm habitat.",
+        "Take a close-up photo of leaf attachment or petals for your field journal.",
+        "Local Engine Note: Evaluated via offline taxonomy & color feature heuristics.",
       ],
       candidateAlternatives: alternatives,
       modelUsed: "Offline Taxonomy Matcher",
