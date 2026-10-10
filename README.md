@@ -8,6 +8,7 @@
 [![Privacy First](https://img.shields.io/badge/Privacy-100%25_On--Device_IndexedDB-success.svg)](#12-privacy--data-storage-behavior)
 [![Hacktoberfest Challenge](https://img.shields.io/badge/Hacktoberfest-Touch_Grass_Challenge-orange.svg)](https://dev.to/challenges/hacktoberfest-week1-2026-10-05)
 
+**Live Production Deployment:** [https://terraquest-ai-murex.vercel.app](https://terraquest-ai-murex.vercel.app)  
 **GitHub Repository:** [https://github.com/GenX0Gravity/TerraQuestAI](https://github.com/GenX0Gravity/TerraQuestAI)  
 **Hackathon Submission:** [DEV Community Hacktoberfest 2026 Week 1: Touch Grass](https://dev.to/challenges/hacktoberfest-week1-2026-10-05)
 
@@ -314,9 +315,11 @@ npm run test:watch
 
 ---
 
-## 13. Deployment Guide
+## 13. Deployment Guide & Live Verification
 
-### Deploying to Vercel (Recommended)
+**Verified Live Deployment:** [https://terraquest-ai-murex.vercel.app](https://terraquest-ai-murex.vercel.app)
+
+### Deploying to Vercel (Production Setup)
 1. Fork or push the repository to GitHub: `https://github.com/GenX0Gravity/TerraQuestAI`
 2. Import the project into [Vercel](https://vercel.com/new).
 3. Framework preset: **Next.js**.

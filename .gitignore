@@ -31,3 +31,5 @@ models/
 *.tflite
 .kaggle/
 *.tsbuildinfo
+
+.vercel
