@@ -1,0 +1,91 @@
+@import "leaflet/dist/leaflet.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fbf9f4;
+  --foreground: #1c2b20;
+  --card: #ffffff;
+  --card-foreground: #1c2b20;
+  --primary: #2d543e;
+  --primary-foreground: #f4f7f4;
+  --secondary: #e7eee5;
+  --secondary-foreground: #273827;
+  --muted: #edf2eb;
+  --muted-foreground: #5a6e5b;
+  --accent: #d88939;
+  --accent-foreground: #ffffff;
+  --border: #dbe4d8;
+  --input: #dbe4d8;
+  --ring: #365236;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #111a13;
+  --foreground: #e5ece4;
+  --card: #18241b;
+  --card-foreground: #e5ece4;
+  --primary: #446744;
+  --primary-foreground: #f4f7f4;
+  --secondary: #223326;
+  --secondary-foreground: #cddbcd;
+  --muted: #1c2a1f;
+  --muted-foreground: #8fa382;
+  --accent: #e59a4c;
+  --accent-foreground: #ffffff;
+  --border: #283a2d;
+  --input: #283a2d;
+  --ring: #598359;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-feature-settings: "rlig" 1, "calt" 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Field Guide texture subtly applied to main background */
+.bg-field-pattern {
+  background-color: var(--background);
+  background-image: radial-gradient(rgba(45, 84, 62, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #c3d4c0;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ab396;
+}
+
+/* High contrast mode styles */
+.high-contrast {
+  --background: #000000 !important;
+  --foreground: #ffffff !important;
+  --card: #0a0a0a !important;
+  --card-foreground: #ffffff !important;
+  --border: #44ff88 !important;
+  --primary: #00ff66 !important;
+  --primary-foreground: #000000 !important;
+}
+
+/* Smooth card transitions */
+.nature-card-hover {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+.nature-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -4px rgba(31, 59, 43, 0.12);
+}
